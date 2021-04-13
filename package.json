@@ -1,9 +1,9 @@
 {
   "name": "clean-web-ui-form-builder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Framework Agnostic Form Builder",
-  "main": "dist/esm2015/index.js",
-  "types": "dist/esm2015/index.d.ts",
+  "main": "esm2015/index.js",
+  "types": "esm2015/index.d.ts",
   "repository": "https://github.com/brankodimitrijoski/clean-web-ui-form-builder",
   "author": "Branko Dimitrijoski",
   "license": "MIT",
