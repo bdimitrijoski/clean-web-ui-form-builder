@@ -23,9 +23,19 @@ export class CWFormControl extends FormControlComposite {
   render(): HTMLFormElement {
     const el: any = document.createElement('form');
     this.nativeElement = el;
-    // this.assignAttributes();
+    this.assignAttributes();
     el.appendChild(super.render());
 
     return el;
+  }
+
+  private assignAttributes() {
+    if (!this.attributes) {
+      return;
+    }
+
+    Object.keys(this.attributes).forEach((attr) => {
+      this.getNativeElement().setAttribute(attr, this.attributes[attr].toString());
+    });
   }
 }

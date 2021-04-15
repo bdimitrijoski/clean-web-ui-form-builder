@@ -47,9 +47,12 @@ export class CWFormBuilder extends HTMLElement {
 
     // Create a new shadow dom root.
     // The mode describes, if the node can be accessed from the outside.
-    this.attachShadow({ mode: 'open' });
+    this._root = this;
 
-    this._root = this.shadowRoot;
+    if (this.options && this.options.useShadowDom) {
+      this.attachShadow({ mode: 'open' });
+      this._root = this.shadowRoot;
+    }
 
     // Fill the shadow dom with the template by a deep clone.
     this._root.appendChild(formBuilderStyles.content.cloneNode(true));
@@ -57,7 +60,7 @@ export class CWFormBuilder extends HTMLElement {
 
     this._options = this._defaultOptions;
 
-    this._formBuilderEl = this.shadowRoot.querySelector('#formBuilder');
+    this._formBuilderEl = this._root.querySelector('#formBuilder');
     this.configParserService = new ConfigParserService();
     this.eventDispatcher = new EventDispatcherService();
     this.valueService = new FormBuilderValueService();
@@ -160,12 +163,21 @@ export class CWFormBuilder extends HTMLElement {
     }
   }
 
+  refresh() {
+    if (!this._isReady) {
+      return;
+    }
+    this.formBuilderForm.setValue(this.valueService.getState());
+  }
+
   getValues(): any {
-    return this.formBuilderForm.getValue();
+    return this.valueService.getState();
   }
 
   setControlValue(controlName, value): void {
+    this.valueService.isFormReady = false;
     this.formBuilderForm.setValue(value, controlName);
+    this.valueService.isFormReady = true;
   }
 
   setControlAttribute(controlId, attributeName, value): void {
@@ -184,6 +196,12 @@ export class CWFormBuilder extends HTMLElement {
     this._root.querySelectorAll('.form-control').forEach((ctrl) => {
       isDisabled ? ctrl.setAttribute('readonly', isDisabled) : ctrl.removeAttribute('readonly');
     });
+  }
+
+  setStyles(styles: string): void {
+    const style = document.createElement('style');
+    style.textContent = styles;
+    this._root.append(style);
   }
 
   isValid(highlightInvalidValues = false): boolean {
@@ -250,7 +268,10 @@ export class CWFormBuilder extends HTMLElement {
 
   private updateFormStyles(): void {
     setTimeout(() => {
-      (this._formBuilderEl.querySelector('cw-form-layout') as any).updateStyles();
+      const formLayout = this._formBuilderEl.querySelector('cw-form-layout') as any;
+      if (formLayout) {
+        formLayout.updateStyles();
+      }
     });
   }
 }

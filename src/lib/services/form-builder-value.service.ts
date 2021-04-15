@@ -55,7 +55,7 @@ export class FormBuilderValueService {
 
   setValue(property, newValue): void {
     if (!property || !this.state.hasOwnProperty(property)) {
-      console.warn(`Property named ${property} does not exist!`);
+      // this.state[property] = newValue;
       return;
     }
 

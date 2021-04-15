@@ -115,4 +115,5 @@ export interface ControlsMap {
 export interface FormBuilderOptions {
   /** Set custom controls that will be used for rendering */
   controls?: ControlsMap;
+  useShadowDom?: boolean;
 }

@@ -17,9 +17,9 @@ export abstract class FormControlComposite extends FormControl {
 
   setValue(data: DataObject, controlName?: string): void {
     const setDataCallback = (control: IFormControl) => {
-      let val = data.hasOwnProperty(control.getName()) ? data[control.getName()] : data;
+      let val = data && data.hasOwnProperty(control.getName()) ? data[control.getName()] : data;
 
-      if (!data.hasOwnProperty(control.getName()) && control.getControlType() === ControlType.FORM_CONTROL) {
+      if (data && !data.hasOwnProperty(control.getName()) && control.getControlType() === ControlType.FORM_CONTROL) {
         val = null;
       }
 

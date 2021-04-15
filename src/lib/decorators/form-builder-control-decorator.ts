@@ -1,4 +1,4 @@
-import { FormBuilderAttributeRule, FormBuilderFormControlEvents, FormBuilderRuleType, IFormControl } from '../models';
+import { ControlType, FormBuilderAttributeRule, FormBuilderFormControlEvents, FormBuilderRuleType, IFormControl } from '../models';
 import { EventDispatcherService, FormBuilderValueService } from '../services';
 
 /* eslint-disable */
@@ -23,7 +23,7 @@ export const formBuilderControlDecorator = (
     return rules.findIndex((rule) => rule.rule_type === ruleType) !== -1;
   };
 
-  const executeRule = (rule: FormBuilderAttributeRule, control: IFormControl): void => {
+  const executeRule = (rule: FormBuilderAttributeRule, control: IFormControl, data?: any): void => {
     if (!control.getNativeElement()) {
       return;
     }
@@ -35,15 +35,19 @@ export const formBuilderControlDecorator = (
     const predicateVal = rule.rule_value(ctx);
 
     if (predicateVal && rule.rule_type === FormBuilderRuleType.VALUE_CHANGED && valueService.isFormReady) {
+      if (data) {
+        ctx.newValue = data;
+        ctx.valueService = valueService;
+      }
       rule.rule_command(ctx);
     } else if (rule.rule_type !== FormBuilderRuleType.VALUE_CHANGED) {
       rule.rule_command(control, predicateVal, ctx);
     }
   };
 
-  const executeRuleByType = (ruleType: string, rules: FormBuilderAttributeRule[], control: IFormControl): void => {
+  const executeRuleByType = (ruleType: string, rules: FormBuilderAttributeRule[], control: IFormControl, data?: any): void => {
     const rule = rules.find((rule) => rule.rule_type === ruleType);
-    executeRule(rule, control);
+    executeRule(rule, control, data);
   };
 
   if (typeof ctrl.attachEventListeners === 'function') {
@@ -100,14 +104,22 @@ export const formBuilderControlDecorator = (
       const name = ctrl.getName();
       const newValue = args[0];
 
+      if (!valueService.isFormReady) {
+        return;
+      }
+
       if (newValue === ctrl.getValue()) {
+        return;
+      }
+
+      if (ctrl.getControlType() !== ControlType.FORM_CONTROL && ctrl.getControlType() !== ControlType.CUSTOM_CONTROL) {
         return;
       }
 
       valueService.setValue(name, newValue);
 
       if (hasRule(FormBuilderRuleType.VALUE_CHANGED, ctrl.getRules())) {
-        executeRuleByType(FormBuilderRuleType.VALUE_CHANGED, ctrl.getRules(), ctrl);
+        executeRuleByType(FormBuilderRuleType.VALUE_CHANGED, ctrl.getRules(), ctrl, newValue);
       }
       if (hasRule(FormBuilderRuleType.VALIDATION, ctrl.getRules())) {
         executeRuleByType(FormBuilderRuleType.VALIDATION, ctrl.getRules(), ctrl);
