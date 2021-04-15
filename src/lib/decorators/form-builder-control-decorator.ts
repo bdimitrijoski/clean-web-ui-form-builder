@@ -112,6 +112,20 @@ export const formBuilderControlDecorator = (
         return;
       }
 
+      // hack for now
+      if (Array.isArray(ctrl.getValue()) && !Array.isArray(newValue)) {
+        if (hasRule(FormBuilderRuleType.VALUE_CHANGED, ctrl.getRules())) {
+          executeRuleByType(FormBuilderRuleType.VALUE_CHANGED, ctrl.getRules(), ctrl, newValue);
+        }
+
+        const data = {
+          name: name,
+          value: newValue,
+        };
+        eventDispatcher.send(FormBuilderFormControlEvents.onValueChanged, data);
+        return;
+      }
+
       if (ctrl.getControlType() !== ControlType.FORM_CONTROL && ctrl.getControlType() !== ControlType.CUSTOM_CONTROL) {
         return;
       }

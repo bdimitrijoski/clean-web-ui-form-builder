@@ -1,6 +1,6 @@
 {
   "name": "clean-web-ui-form-builder",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Framework Agnostic Form Builder",
   "main": "esm2015/index.js",
   "types": "esm2015/index.d.ts",

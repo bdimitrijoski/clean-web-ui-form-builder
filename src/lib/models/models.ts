@@ -7,6 +7,7 @@ export interface FormBuilderConfig {
   custom_functions: {
     [functionName: string]: Function;
   };
+  custom_styles: string;
 }
 
 export interface IFormControl {
